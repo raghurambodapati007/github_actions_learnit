@@ -1,0 +1,45 @@
+name: Build and Push to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Log in to Azure Container Registry
+      - name: Log in to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .  # Use repository root as build context
+          file: ./Dockerfile  # Path to Dockerfile
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/learnit.azure.container:${{ github.sha }}  # Tag with commit SHA
+          # Optional: Add additional tags, e.g., 'latest'
+          # tags: ${{ secrets.ACR_LOGIN_SERVER }}/myapp:${{ github.sha }},${{ secrets.ACR_LOGIN_SERVER }}/myapp:latest
+
+      # Optional: Verify push (list repositories in ACR)
+      - name: Verify push to ACR
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az acr repository list --name ${{ secrets.ACR_NAME }} --output table
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
