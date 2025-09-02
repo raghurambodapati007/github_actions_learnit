@@ -2,7 +2,7 @@
 FROM openjdk:17-jdk-slim
 
 # Set the working directory
-WORKDIR /app
+#WORKDIR /app
 
 # Copy the Spring Boot JAR file into the container
 COPY target/learnit.azure.container-0.0.1-SNAPSHOT.jar app.jar
