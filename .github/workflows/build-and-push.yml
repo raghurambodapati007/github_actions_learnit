@@ -15,10 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
 
@@ -41,8 +41,7 @@ jobs:
           file: ./Dockerfile  # Path to Dockerfile
           push: true
           tags: ${{ secrets.ACR_LOGIN_SERVER }}/learnit.azure.container:${{ github.sha }}  # Tag with commit SHA
-          # Optional: Add additional tags, e.g., 'latest'
-          # tags: ${{ secrets.ACR_LOGIN_SERVER }}/myapp:${{ github.sha }},${{ secrets.ACR_LOGIN_SERVER }}/myapp:latest
+
 
       # Optional: Verify push (list repositories in ACR)
       - name: Verify push to ACR
