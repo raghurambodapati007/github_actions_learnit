@@ -6,16 +6,6 @@ on:
       - main  # Trigger on push to main branch
   workflow_dispatch:  # Allow manual trigger
 
-env:
-  IMAGE_NAME: myapp
-  ACR_NAME: <registry-name> # Replace with your ACR name
-  CONTAINER_APP_NAME: <container-app-name> # Replace with your Container App name
-  CONTAINER_ENV_NAME: <env-name> # Replace with your Container App environment name
-  RESOURCE_GROUP: <resource-group-name> # Replace with your resource group name
-  LOCATION: <location>
-
-
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
