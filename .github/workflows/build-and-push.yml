@@ -6,6 +6,16 @@ on:
       - main  # Trigger on push to main branch
   workflow_dispatch:  # Allow manual trigger
 
+env:
+  IMAGE_NAME: myapp
+  ACR_NAME: <registry-name> # Replace with your ACR name
+  CONTAINER_APP_NAME: <container-app-name> # Replace with your Container App name
+  CONTAINER_ENV_NAME: <env-name> # Replace with your Container App environment name
+  RESOURCE_GROUP: <resource-group-name> # Replace with your resource group name
+  LOCATION: <location>
+
+
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -42,7 +52,6 @@ jobs:
           push: true
           tags: ${{ secrets.ACR_LOGIN_SERVER }}/learnit.azure.container:${{ github.sha }}  # Tag with commit SHA
 
-
       # Optional: Verify push (list repositories in ACR)
       - name: Verify push to ACR
         run: |
@@ -52,3 +61,13 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          containerAppName: 'learnit-container-app'
+          resourceGroup: 'learnitRG'
+          registryUrl: ${{ secrets.ACR_LOGIN_SERVER }}
+          registryUsername: ${{ secrets.ACR_USERNAME }}
+          registryPassword: ${{ secrets.ACR_PASSWORD }}
